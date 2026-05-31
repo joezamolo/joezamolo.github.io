@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Summer Fit">
+<title>Summer Fitness Plan</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f172a;
+    --bg2: #1e293b;
+    --surface: rgba(255,255,255,0.05);
+    --border: rgba(255,255,255,0.09);
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+    --dim: #475569;
+    --w1: #f97316;
+    --w2: #10b981;
+    --w3: #818cf8;
+    --w4: #f472b6;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overscroll-behavior: none;
+  }
+  body { padding-bottom: env(safe-area-inset-bottom, 20px); }
+
+  /* Header */
+  .header {
+    background: linear-gradient(180deg, #0a1628 0%, var(--bg) 100%);
+    padding: max(env(safe-area-inset-top, 12px), 12px) 18px 18px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 100;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  .header-eyebrow {
+    font-size: 10px; letter-spacing: 0.18em; color: var(--dim);
+    text-transform: uppercase; margin-bottom: 5px;
+  }
+  .header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px; font-weight: 700; color: var(--text);
+    letter-spacing: -0.3px;
+  }
+  .header p { font-size: 12px; color: var(--muted); margin-top: 3px; }
+
+  /* Week tabs */
+  .week-tabs {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 7px; padding: 14px 14px 0;
+  }
+  .week-btn {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 10px; padding: 9px 4px;
+    cursor: pointer; color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px; font-weight: 600;
+    transition: all 0.18s; text-align: center;
+    -webkit-appearance: none;
+  }
+  .week-btn .wnum { font-size: 14px; margin-bottom: 2px; display: block; }
+  .week-btn .wsub { font-size: 9px; opacity: 0.75; font-weight: 400; }
+  .week-btn.active { color: #fff; }
+
+  /* Theme banner */
+  .theme-banner {
+    margin: 10px 14px 0;
+    border-radius: 10px; padding: 10px 14px;
+    font-size: 12px; line-height: 1.5;
+  }
+  .theme-banner strong { font-weight: 700; }
+  .theme-banner span { color: var(--muted); }
+
+  /* Day tabs */
+  .day-tabs {
+    display: grid; grid-template-columns: repeat(7, 1fr);
+    gap: 5px; padding: 12px 14px 0;
+  }
+  .day-btn {
+    background: rgba(255,255,255,0.04);
+    border: 1.5px solid var(--border);
+    border-radius: 8px; padding: 7px 2px;
+    cursor: pointer; color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10px; text-align: center;
+    transition: all 0.18s; -webkit-appearance: none;
+  }
+  .day-btn .dname { font-size: 13px; margin-bottom: 2px; display: block; font-weight: 600; }
+  .day-btn .dtype { font-size: 8px; opacity: 0.75; }
+  .day-btn.active { color: #fff; }
+
+  /* Day card */
+  .day-card {
+    margin: 12px 14px 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px; overflow: hidden;
+  }
+  .day-header {
+    padding: 14px 16px;
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid var(--border);
+  }
+  .day-header .day-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px; color: var(--text);
+  }
+  .day-tag {
+    display: inline-block; margin-top: 5px;
+    border-radius: 6px; padding: 2px 8px;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.02em;
+  }
+  .day-header .dur { text-align: right; }
+  .day-header .dur-val { font-size: 18px; font-weight: 700; }
+  .day-header .dur-lbl { font-size: 10px; color: var(--dim); }
+
+  /* Section tabs */
+  .section-tabs {
+    display: flex;
+    background: rgba(0,0,0,0.2);
+    border-bottom: 1px solid var(--border);
+  }
+  .sec-btn {
+    flex: 1; padding: 9px 4px;
+    border: none; background: none;
+    color: var(--dim); cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px; font-weight: 600;
+    border-bottom: 2px solid transparent;
+    transition: all 0.18s; -webkit-appearance: none;
+  }
+  .sec-btn.active { border-bottom-color: currentColor; }
+
+  /* Content area */
+  .section-content { padding: 14px 16px; }
+
+  /* Simple list (warmup/cooldown) */
+  .simple-list .item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 13px; color: #cbd5e1;
+  }
+  .simple-list .item:last-child { border-bottom: none; }
+  .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+  /* Exercise cards */
+  .ex-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 10px; padding: 11px 13px; margin-bottom: 9px;
+  }
+  .ex-card:last-child { margin-bottom: 0; }
+  .ex-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px; }
+  .ex-name { font-size: 14px; color: var(--text); line-height: 1.3; }
+  .ex-sets {
+    border-radius: 5px; padding: 2px 7px;
+    font-size: 11px; font-weight: 700;
+    white-space: nowrap; margin-left: 8px; flex-shrink: 0;
+  }
+  .ex-meta { display: flex; gap: 12px; margin-bottom: 6px; flex-wrap: wrap; }
+  .ex-meta span { font-size: 11px; color: var(--dim); }
+  .ex-tip {
+    font-size: 11px; color: var(--muted);
+    font-style: italic; line-height: 1.5;
+    border-left: 2px solid rgba(255,255,255,0.15);
+    padding-left: 8px;
+  }
+
+  /* Tips section */
+  .tips-header {
+    font-size: 11px; letter-spacing: 0.12em; color: var(--dim);
+    text-transform: uppercase; margin: 18px 14px 10px;
+  }
+  .tips-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 8px; padding: 0 14px;
+    padding-bottom: 24px;
+  }
+  .tip-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px; padding: 11px;
+  }
+  .tip-icon { font-size: 17px; margin-bottom: 4px; }
+  .tip-title { font-size: 11px; font-weight: 700; color: #e2e8f0; margin-bottom: 3px; }
+  .tip-text { font-size: 10px; color: var(--muted); line-height: 1.5; }
+
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-eyebrow">At-Home · Beginner · 20–30 min/day</div>
+  <h1>Summer Fitness Plan</h1>
+  <p>Weight Loss + Stress Relief · 4-Week Repeating Cycle</p>
+</div>
+
+<div class="week-tabs" id="weekTabs"></div>
+<div class="theme-banner" id="themeBanner"></div>
+<div class="day-tabs" id="dayTabs"></div>
+<div class="day-card" id="dayCard"></div>
+<div class="tips-header">Success Tips</div>
+<div class="tips-grid" id="tipsGrid"></div>
+
+<script>
+const WEEK_COLORS = ['#f97316','#10b981','#818cf8','#f472b6'];
+
+const PLAN = {
+  tips: [
+    {icon:'💧',title:'Hydration',text:'Drink 8–10 cups of water daily. Have a glass before every workout.'},
+    {icon:'😴',title:'Sleep',text:'7–9 hours supports fat loss and stress recovery. It\'s part of the program.'},
+    {icon:'🍽️',title:'Nutrition',text:'Aim for whole foods, reduce ultra-processed snacks, and don\'t skip meals.'},
+    {icon:'📈',title:'Progress',text:'Weigh yourself once a week, same time. Don\'t chase daily fluctuations.'},
+    {icon:'🧠',title:'Stress Relief',text:'The cooldown breathing is non-negotiable. 2 minutes of slow breathing lowers cortisol.'},
+    {icon:'🔁',title:'Cycle Repeat',text:'After Week 4, restart Week 1 with slightly heavier weights. Progress is automatic.'},
+  ],
+  weeks:[
+    {
+      label:'Week 1', theme:'Foundation & Movement',
+      focus:'Learn the movements. Keep effort low. Rest generously.',
+      days:[
+        {day:'Monday',type:'Strength',tag:'💪 Strength',dur:'25 min',
+          warmup:['March in place – 1 min','Arm circles – 30 sec each direction','Hip circles – 30 sec each direction'],
+          exercises:[
+            {name:'Bodyweight Squat',sets:'3 × 10',rest:'45 sec',tip:'Sit back like you\'re reaching for a chair',weight:'Bodyweight'},
+            {name:'Resistance Band Row (long band)',sets:'3 × 10',rest:'45 sec',tip:'Squeeze shoulder blades together at the end',weight:'Light band'},
+            {name:'Dumbbell Deadlift',sets:'3 × 10',rest:'45 sec',tip:'Push hips back, keep back flat',weight:'5–8 lbs'},
+            {name:'Wall Push-Up',sets:'3 × 10',rest:'45 sec',tip:'Hands shoulder-width on wall, keep body straight',weight:'Bodyweight'},
+            {name:'Standing Band Bicep Curl',sets:'2 × 12',rest:'30 sec',tip:'Keep elbows pinned to sides',weight:'Short band / 3–5 lbs'},
+          ],
+          cooldown:['Child\'s pose – 1 min','Chest opener stretch – 30 sec each side','Standing quad stretch – 30 sec each leg']},
+        {day:'Tuesday',type:'Cardio',tag:'🫀 Cardio + Stretch',dur:'25 min',
+          warmup:['Slow march – 2 min'],
+          exercises:[
+            {name:'Marching in Place',sets:'3 min',rest:'—',tip:'Pump your arms to elevate heart rate',weight:'—'},
+            {name:'Step Touch Side-to-Side',sets:'2 min',rest:'—',tip:'Keep it smooth and rhythmic',weight:'—'},
+            {name:'Low Knee Raise',sets:'2 min',rest:'—',tip:'Lift knees to hip height comfortably',weight:'—'},
+            {name:'Repeat circuit 2×',sets:'—',rest:'1 min between rounds',tip:'Go at YOUR pace — this should feel moderate',weight:'—'},
+          ],
+          cooldown:['Seated forward fold – 1 min','Supine figure-4 hip stretch – 1 min each side','Deep breathing – 2 min (inhale 4, exhale 6)']},
+        {day:'Wednesday',type:'Rest',tag:'🧘 Rest Day',dur:'10–15 min',
+          warmup:[],
+          exercises:[
+            {name:'Light walk (optional)',sets:'10–15 min',rest:'—',tip:'Outdoors if possible — sunlight helps stress relief',weight:'—'},
+            {name:'Full body stretch',sets:'10 min',rest:'—',tip:'Hold each stretch 30–60 sec, breathe deeply',weight:'—'},
+          ],
+          cooldown:[]},
+        {day:'Thursday',type:'Strength',tag:'💪 Strength',dur:'25 min',
+          warmup:['Leg swings – 30 sec each leg','Shoulder rolls – 30 sec','Cat-cow – 1 min'],
+          exercises:[
+            {name:'Reverse Lunge (alternating)',sets:'3 × 8 each leg',rest:'45 sec',tip:'Step back, lower knee toward floor slowly',weight:'Bodyweight'},
+            {name:'Dumbbell Shoulder Press',sets:'3 × 10',rest:'45 sec',tip:'Press overhead, don\'t arch lower back',weight:'3–5 lbs'},
+            {name:'Band Pull-Apart',sets:'3 × 12',rest:'30 sec',tip:'Keep arms straight, pull band to chest',weight:'Long band'},
+            {name:'Glute Bridge',sets:'3 × 12',rest:'30 sec',tip:'Squeeze glutes at the top, hold 1 sec',weight:'Bodyweight'},
+            {name:'Dumbbell Side Lateral Raise',sets:'2 × 10',rest:'30 sec',tip:'Slight bend in elbow, lead with elbows',weight:'3 lbs'},
+          ],
+          cooldown:['Pigeon pose (modified on back) – 1 min each side','Neck rolls – 30 sec','Diaphragmatic breathing – 2 min']},
+        {day:'Friday',type:'Cardio',tag:'🫀 Cardio + Core',dur:'25 min',
+          warmup:['March in place – 2 min'],
+          exercises:[
+            {name:'Low-Impact Jumping Jack',sets:'2 min',rest:'—',tip:'Step one foot out at a time instead of jumping',weight:'—'},
+            {name:'Dead Bug',sets:'3 × 6 each side',rest:'30 sec',tip:'Lower opposite arm/leg slowly, keep back flat',weight:'Bodyweight'},
+            {name:'Standing Band Core Twist',sets:'3 × 10 each side',rest:'30 sec',tip:'Rotate from core, keep hips stable',weight:'Long band'},
+            {name:'Plank (on knees)',sets:'3 × 20 sec',rest:'30 sec',tip:'Straight line from knees to head, breathe',weight:'Bodyweight'},
+            {name:'March in Place',sets:'2 min',rest:'—',tip:'Cool down pace',weight:'—'},
+          ],
+          cooldown:['Seated spinal twist – 1 min each side','Happy baby pose – 1 min','Breathing exercise – 2 min']},
+        {day:'Saturday',type:'Recovery',tag:'🌿 Active Recovery',dur:'20 min',
+          warmup:[],
+          exercises:[{name:'Gentle walk or light stretching',sets:'20 min',rest:'—',tip:'Focus on how your body feels — celebrate movement',weight:'—'}],
+          cooldown:[]},
+        {day:'Sunday',type:'Rest',tag:'😴 Full Rest',dur:'—',
+          warmup:[],
+          exercises:[{name:'Rest completely',sets:'—',rest:'—',tip:'Recovery is when your body gets stronger. You earned it.',weight:'—'}],
+          cooldown:[]},
+      ]
+    },
+    {
+      label:'Week 2', theme:'Build Consistency',
+      focus:'Same structure, slightly more reps. Focus on form and breathing.',
+      days:[
+        {day:'Monday',type:'Strength',tag:'💪 Strength',dur:'25 min',
+          warmup:['March in place – 1 min','Arm circles – 30 sec','Hip circles – 30 sec'],
+          exercises:[
+            {name:'Bodyweight Squat',sets:'3 × 12',rest:'40 sec',tip:'Add a 2-second pause at the bottom',weight:'Bodyweight'},
+            {name:'Resistance Band Row',sets:'3 × 12',rest:'40 sec',tip:'Control the return — don\'t let it snap back',weight:'Medium band'},
+            {name:'Dumbbell Deadlift',sets:'3 × 12',rest:'40 sec',tip:'Try 8 lbs if 5 felt easy last week',weight:'5–8 lbs'},
+            {name:'Incline Push-Up (on couch/counter)',sets:'3 × 10',rest:'45 sec',tip:'Lower surface = harder than wall push-up',weight:'Bodyweight'},
+            {name:'Dumbbell Bicep Curl',sets:'2 × 12',rest:'30 sec',tip:'Full range of motion, slow on the way down',weight:'5 lbs'},
+          ],
+          cooldown:['Child\'s pose – 1 min','Chest opener – 30 sec each side','Standing quad stretch – 30 sec each leg']},
+        {day:'Tuesday',type:'Cardio',tag:'🫀 Cardio + Stretch',dur:'28 min',
+          warmup:['Slow march – 2 min'],
+          exercises:[
+            {name:'Marching in Place',sets:'3 min',rest:'—',tip:'Increase arm pump intensity',weight:'—'},
+            {name:'Step Touch + Overhead Reach',sets:'2 min',rest:'—',tip:'Add arms going overhead as you step',weight:'—'},
+            {name:'Standing Side Crunch (slow)',sets:'2 min',rest:'—',tip:'Elbow to knee, controlled movement',weight:'—'},
+            {name:'Repeat circuit 2×',sets:'—',rest:'45 sec between rounds',tip:'Aim to feel slightly breathless but able to talk',weight:'—'},
+          ],
+          cooldown:['Seated forward fold – 1 min','Figure-4 hip stretch – 1 min each side','Box breathing – 2 min (4 in, 4 hold, 4 out, 4 hold)']},
+        {day:'Wednesday',type:'Rest',tag:'🧘 Rest Day',dur:'10–15 min',
+          warmup:[],
+          exercises:[
+            {name:'Light walk (optional)',sets:'15 min',rest:'—',tip:'Try a new route to stay mentally engaged',weight:'—'},
+            {name:'Full body stretch',sets:'10 min',rest:'—',tip:'Focus on hips, hamstrings, and shoulders',weight:'—'},
+          ],
+          cooldown:[]},
+        {day:'Thursday',type:'Strength',tag:'💪 Strength',dur:'27 min',
+          warmup:['Leg swings – 30 sec each','Shoulder rolls – 30 sec','Cat-cow – 1 min'],
+          exercises:[
+            {name:'Reverse Lunge (alternating)',sets:'3 × 10 each leg',rest:'40 sec',tip:'Hold 5 lb dumbbells for added challenge',weight:'Bodyweight or 5 lbs'},
+            {name:'Dumbbell Shoulder Press',sets:'3 × 12',rest:'40 sec',tip:'Try 5 lbs if 3 felt too easy',weight:'5 lbs'},
+            {name:'Band Pull-Apart',sets:'3 × 15',rest:'30 sec',tip:'Go slow — squeeze at full extension',weight:'Long band'},
+            {name:'Glute Bridge',sets:'3 × 15',rest:'30 sec',tip:'Add short band above knees for extra glute work',weight:'Bodyweight + band'},
+            {name:'Lateral Raise',sets:'2 × 12',rest:'30 sec',tip:'Keep core tight throughout',weight:'3–5 lbs'},
+          ],
+          cooldown:['Pigeon pose (modified) – 1 min each side','Neck rolls – 30 sec','Breathing – 2 min']},
+        {day:'Friday',type:'Cardio',tag:'🫀 Cardio + Core',dur:'27 min',
+          warmup:['March in place – 2 min'],
+          exercises:[
+            {name:'Low-Impact Jumping Jack',sets:'3 min',rest:'—',tip:'Add arm reach overhead for more effort',weight:'—'},
+            {name:'Dead Bug',sets:'3 × 8 each side',rest:'30 sec',tip:'Exhale as you lower — brace your core',weight:'Bodyweight'},
+            {name:'Standing Band Core Twist',sets:'3 × 12 each side',rest:'30 sec',tip:'Anchor band around furniture if needed',weight:'Long band'},
+            {name:'Plank (on knees)',sets:'3 × 25 sec',rest:'30 sec',tip:'5 more seconds than last week — you can do it',weight:'Bodyweight'},
+            {name:'Standing March',sets:'2 min',rest:'—',tip:'Cool down pace, focus on breathing',weight:'—'},
+          ],
+          cooldown:['Seated spinal twist – 1 min each side','Happy baby – 1 min','Breathing – 2 min']},
+        {day:'Saturday',type:'Recovery',tag:'🌿 Active Recovery',dur:'20–25 min',
+          warmup:[],
+          exercises:[{name:'Walk or yoga-style flow',sets:'20–25 min',rest:'—',tip:'Try adding 5 extra minutes this week',weight:'—'}],
+          cooldown:[]},
+        {day:'Sunday',type:'Rest',tag:'😴 Full Rest',dur:'—',
+          warmup:[],
+          exercises:[{name:'Rest completely',sets:'—',rest:'—',tip:'Hydrate well and get good sleep tonight.',weight:'—'}],
+          cooldown:[]},
+      ]
+    },
+    {
+      label:'Week 3', theme:'Progressive Challenge',
+      focus:'Increase intensity slightly. You should feel the difference from Week 1!',
+      days:[
+        {day:'Monday',type:'Strength',tag:'💪 Strength',dur:'28 min',
+          warmup:['March in place – 1 min','Dynamic leg swings – 30 sec each','Arm circles – 30 sec'],
+          exercises:[
+            {name:'Goblet Squat (dumbbell)',sets:'3 × 12',rest:'40 sec',tip:'Hold dumbbell at chest, elbows point down',weight:'8 lbs'},
+            {name:'Band-Resisted Row',sets:'3 × 12',rest:'40 sec',tip:'Use heavier band tension this week',weight:'Heavier band'},
+            {name:'Romanian Deadlift',sets:'3 × 12',rest:'40 sec',tip:'Hinge at hips, feel the hamstring stretch',weight:'8 lbs'},
+            {name:'Incline Push-Up (lower surface)',sets:'3 × 12',rest:'45 sec',tip:'The lower the surface, the more challenging',weight:'Bodyweight'},
+            {name:'Hammer Curl',sets:'3 × 10',rest:'30 sec',tip:'Thumbs up grip — great for forearms too',weight:'5–8 lbs'},
+          ],
+          cooldown:['Child\'s pose – 1 min','Thoracic rotation – 30 sec each side','Calf stretch – 30 sec each']},
+        {day:'Tuesday',type:'Cardio',tag:'🫀 Cardio + Stretch',dur:'28 min',
+          warmup:['Slow march – 2 min'],
+          exercises:[
+            {name:'March in Place',sets:'3 min',rest:'—',tip:'Increase pace — aim to feel warm and slightly breathless',weight:'—'},
+            {name:'Lateral Step + Reach',sets:'2 min',rest:'—',tip:'Step wide and reach opposite arm across body',weight:'—'},
+            {name:'Standing Bicycle (slow)',sets:'2 min',rest:'—',tip:'Elbow to opposite knee, rotate your torso',weight:'—'},
+            {name:'Repeat circuit 2×',sets:'—',rest:'30 sec between rounds',tip:'Reduce rest time from last week',weight:'—'},
+          ],
+          cooldown:['Seated forward fold – 1 min','Figure-4 hip stretch – 1 min each side','4-7-8 breathing – 3 rounds']},
+        {day:'Wednesday',type:'Rest',tag:'🧘 Rest Day',dur:'15 min',
+          warmup:[],
+          exercises:[{name:'Walk + mindful breathing',sets:'15 min',rest:'—',tip:'Try breathing in for 4 steps, out for 4 steps',weight:'—'}],
+          cooldown:[]},
+        {day:'Thursday',type:'Strength',tag:'💪 Strength',dur:'28 min',
+          warmup:['Leg swings – 30 sec','Hip circles – 30 sec','Cat-cow – 1 min'],
+          exercises:[
+            {name:'Walking Lunge',sets:'3 × 8 each leg',rest:'45 sec',tip:'Step forward into lunge, alternate legs',weight:'Bodyweight or 3–5 lbs'},
+            {name:'Arnold Press',sets:'3 × 10',rest:'40 sec',tip:'Start with palms facing you, rotate as you press',weight:'5 lbs'},
+            {name:'Face Pull (band)',sets:'3 × 12',rest:'30 sec',tip:'Anchor band above head, pull to face level',weight:'Long band'},
+            {name:'Single-Leg Glute Bridge',sets:'3 × 10 each',rest:'30 sec',tip:'Extend one leg, drive through the grounded heel',weight:'Bodyweight'},
+            {name:'Band Lateral Walk',sets:'3 × 12 steps each way',rest:'30 sec',tip:'Keep toes forward, don\'t let knees cave in',weight:'Short band above knees'},
+          ],
+          cooldown:['Pigeon – 1 min each side','Neck stretch – 30 sec each side','Breathing – 2 min']},
+        {day:'Friday',type:'Cardio',tag:'🫀 Cardio + Core',dur:'28 min',
+          warmup:['March in place – 2 min'],
+          exercises:[
+            {name:'Low-Impact Jumping Jack',sets:'3 min',rest:'—',tip:'Maintain arm overhead reach throughout',weight:'—'},
+            {name:'Dead Bug',sets:'3 × 10 each side',rest:'30 sec',tip:'Add 5 lb dumbbell in hands for extra challenge',weight:'Optional 3–5 lbs'},
+            {name:'Pallof Press (band)',sets:'3 × 10 each side',rest:'30 sec',tip:'Press band straight out from chest, resist rotation',weight:'Long band'},
+            {name:'Plank (full or on knees)',sets:'3 × 30 sec',rest:'30 sec',tip:'Try full plank this week if knees felt easy',weight:'Bodyweight'},
+            {name:'Cool-down march',sets:'2 min',rest:'—',tip:'Slow and controlled',weight:'—'},
+          ],
+          cooldown:['Spinal twist – 1 min each side','Happy baby – 1 min','Breathing – 2 min']},
+        {day:'Saturday',type:'Recovery',tag:'🌿 Active Recovery',dur:'25–30 min',
+          warmup:[],
+          exercises:[{name:'Walk or beginner yoga',sets:'25–30 min',rest:'—',tip:'Try a free YouTube yoga class for stress relief',weight:'—'}],
+          cooldown:[]},
+        {day:'Sunday',type:'Rest',tag:'😴 Full Rest',dur:'—',
+          warmup:[],
+          exercises:[{name:'Rest completely',sets:'—',rest:'—',tip:'Reflect on how far you\'ve come from Week 1.',weight:'—'}],
+          cooldown:[]},
+      ]
+    },
+    {
+      label:'Week 4', theme:'Peak & Reset',
+      focus:'Your best effort this cycle. Then rest — you\'ll start Week 1 stronger.',
+      days:[
+        {day:'Monday',type:'Strength',tag:'💪 Strength',dur:'30 min',
+          warmup:['Dynamic warm-up – 3 min (march, circles, swings)'],
+          exercises:[
+            {name:'Goblet Squat',sets:'4 × 12',rest:'35 sec',tip:'4 sets this week — you\'ve earned the volume',weight:'8 lbs'},
+            {name:'Band Row',sets:'4 × 12',rest:'35 sec',tip:'Maintain control on every rep',weight:'Heavy band'},
+            {name:'Romanian Deadlift',sets:'3 × 12',rest:'40 sec',tip:'Focus on feeling the hamstrings stretch',weight:'8 lbs'},
+            {name:'Incline Push-Up (low surface)',sets:'3 × 12',rest:'40 sec',tip:'Aim for chest nearly touching the surface',weight:'Bodyweight'},
+            {name:'Superset: Curl + Press',sets:'2 × 10 each',rest:'40 sec',tip:'Curl up, then press overhead — continuous motion',weight:'5 lbs'},
+          ],
+          cooldown:['Full body stretch – 5 min','Breathing – 2 min']},
+        {day:'Tuesday',type:'Cardio',tag:'🫀 Cardio + Stretch',dur:'30 min',
+          warmup:['Slow march – 2 min'],
+          exercises:[
+            {name:'March in Place',sets:'3 min',rest:'—',tip:'Best effort — you know what you\'re doing now',weight:'—'},
+            {name:'Lateral Step + Reach',sets:'2 min',rest:'—',tip:'Add a light dumbbell overhead if you want extra burn',weight:'Optional 3 lbs'},
+            {name:'Standing Bicycle',sets:'2 min',rest:'—',tip:'Slow and controlled — core, not momentum',weight:'—'},
+            {name:'Repeat circuit 3×',sets:'—',rest:'20 sec between rounds',tip:'3 rounds this week! Your endurance has grown.',weight:'—'},
+          ],
+          cooldown:['Long full-body stretch – 5 min','Box breathing – 3 min']},
+        {day:'Wednesday',type:'Rest',tag:'🧘 Rest Day',dur:'15–20 min',
+          warmup:[],
+          exercises:[{name:'Walk or yoga',sets:'15–20 min',rest:'—',tip:'Let your mind wander — this is mental recovery too',weight:'—'}],
+          cooldown:[]},
+        {day:'Thursday',type:'Strength',tag:'💪 Strength',dur:'30 min',
+          warmup:['Dynamic warm-up – 3 min'],
+          exercises:[
+            {name:'Walking Lunge + Curl',sets:'3 × 10 each leg',rest:'40 sec',tip:'Curl dumbbells as you step forward',weight:'5 lbs'},
+            {name:'Arnold Press',sets:'3 × 12',rest:'40 sec',tip:'Control every inch — don\'t rush',weight:'5–8 lbs'},
+            {name:'Face Pull (band)',sets:'3 × 15',rest:'30 sec',tip:'Great for posture and shoulder health',weight:'Long band'},
+            {name:'Single-Leg Glute Bridge',sets:'3 × 12 each',rest:'30 sec',tip:'Strong finish — squeeze and hold 2 sec at top',weight:'Bodyweight'},
+            {name:'Band Lateral Walk',sets:'3 × 15 steps each way',rest:'30 sec',tip:'Stay low — mini squat position throughout',weight:'Short band'},
+          ],
+          cooldown:['Full lower body stretch – 4 min','Breathing – 2 min']},
+        {day:'Friday',type:'Cardio',tag:'🫀 Cardio + Core',dur:'30 min',
+          warmup:['March in place – 2 min'],
+          exercises:[
+            {name:'Low-Impact Jumping Jack',sets:'3 min',rest:'—',tip:'Full effort — last hard cardio of the cycle',weight:'—'},
+            {name:'Dead Bug',sets:'3 × 12 each side',rest:'30 sec',tip:'Perfect form over speed always',weight:'Optional 3–5 lbs'},
+            {name:'Pallof Press',sets:'3 × 12 each side',rest:'30 sec',tip:'Slow press, pause at extension, slow return',weight:'Long band'},
+            {name:'Plank',sets:'3 × 35 sec',rest:'30 sec',tip:'5 more seconds than Week 3 — you\'ve got this',weight:'Bodyweight'},
+            {name:'Cool-down march',sets:'2 min',rest:'—',tip:'Celebrate — cycle complete!',weight:'—'},
+          ],
+          cooldown:['Long full-body stretch – 5 min','Breathing + meditation – 3 min']},
+        {day:'Saturday',type:'Recovery',tag:'🌿 Active Recovery',dur:'30 min',
+          warmup:[],
+          exercises:[{name:'Celebratory walk or fun activity',sets:'30 min',rest:'—',tip:'Do something you enjoy — dance, swim, hike. You finished a cycle!',weight:'—'}],
+          cooldown:[]},
+        {day:'Sunday',type:'Rest',tag:'😴 Full Rest',dur:'—',
+          warmup:[],
+          exercises:[{name:'Rest completely',sets:'—',rest:'—',tip:'Next week restart Week 1 — but you\'ll be stronger, fitter, and more confident.',weight:'—'}],
+          cooldown:[]},
+      ]
+    },
+  ]
+};
+
+const TAG_STYLES = {
+  '💪 Strength':      {bg:'#fff7ed',border:'#fb923c',color:'#9a3412'},
+  '🫀 Cardio + Stretch':{bg:'#fef2f2',border:'#f87171',color:'#991b1b'},
+  '🫀 Cardio + Core': {bg:'#fef2f2',border:'#f87171',color:'#991b1b'},
+  '🧘 Rest Day':      {bg:'#f0fdf4',border:'#4ade80',color:'#166534'},
+  '🌿 Active Recovery':{bg:'#f0fdf4',border:'#86efac',color:'#14532d'},
+  '😴 Full Rest':     {bg:'#f8fafc',border:'#cbd5e1',color:'#475569'},
+};
+
+let selWeek = 0, selDay = 0, selSec = 'exercises';
+
+function hexA(hex, a) {
+  const r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+
+function renderWeekTabs() {
+  const el = document.getElementById('weekTabs');
+  el.innerHTML = PLAN.weeks.map((w,i) => {
+    const c = WEEK_COLORS[i];
+    const active = i === selWeek;
+    return `<button class="week-btn${active?' active':''}" onclick="selectWeek(${i})"
+      style="border-color:${active?c:'rgba(255,255,255,0.09)'};background:${active?c:'rgba(255,255,255,0.05)'};color:${active?'#fff':'#94a3b8'}">
+      <span class="wnum">${w.label}</span>
+      <span class="wsub">${w.theme.split(' ')[0]}</span>
+    </button>`;
+  }).join('');
+}
+
+function renderThemeBanner() {
+  const w = PLAN.weeks[selWeek];
+  const c = WEEK_COLORS[selWeek];
+  const el = document.getElementById('themeBanner');
+  el.style.cssText = `background:${hexA(c,0.12)};border:1px solid ${hexA(c,0.3)};margin:10px 14px 0;border-radius:10px;padding:10px 14px;font-size:12px;line-height:1.5;`;
+  el.innerHTML = `<strong style="color:${c}">${w.theme}</strong> <span style="color:#94a3b8">— ${w.focus}</span>`;
+}
+
+function renderDayTabs() {
+  const el = document.getElementById('dayTabs');
+  const c = WEEK_COLORS[selWeek];
+  el.innerHTML = PLAN.weeks[selWeek].days.map((d,i) => {
+    const active = i === selDay;
+    return `<button class="day-btn${active?' active':''}" onclick="selectDay(${i})"
+      style="border-color:${active?c:'rgba(255,255,255,0.08)'};background:${active?c:'rgba(255,255,255,0.04)'};color:${active?'#fff':'#94a3b8'}">
+      <span class="dname">${d.day.slice(0,2)}</span>
+      <span class="dtype">${d.type}</span>
+    </button>`;
+  }).join('');
+}
+
+function renderDayCard() {
+  const d = PLAN.weeks[selWeek].days[selDay];
+  const c = WEEK_COLORS[selWeek];
+  const ts = TAG_STYLES[d.tag] || {bg:'#f8fafc',border:'#94a3b8',color:'#475569'};
+  const hasWarm = d.warmup.length > 0;
+  const hasCool = d.cooldown.length > 0;
+
+  // Determine which sections to show tabs for
+  const tabs = [];
+  if (hasWarm) tabs.push({id:'warmup', label:'🔥 Warm-Up'});
+  tabs.push({id:'exercises', label:'🏋️ Exercises'});
+  if (hasCool) tabs.push({id:'cooldown', label:'🌊 Cool-Down'});
+
+  // Ensure selSec is valid
+  if (!tabs.find(t => t.id === selSec)) selSec = 'exercises';
+
+  let content = '';
+  if (selSec === 'warmup' && hasWarm) {
+    content = `<div class="simple-list">${d.warmup.map(item=>`
+      <div class="item"><div class="dot" style="background:${c}"></div>${item}</div>`).join('')}</div>`;
+  } else if (selSec === 'exercises') {
+    content = d.exercises.map(ex => `
+      <div class="ex-card">
+        <div class="ex-top">
+          <div class="ex-name">${ex.name}</div>
+          <div class="ex-sets" style="background:${hexA(c,0.15)};border:1px solid ${hexA(c,0.3)};color:${c}">${ex.sets}</div>
+        </div>
+        <div class="ex-meta">
+          ${ex.rest!=='—'?`<span>⏱ Rest: ${ex.rest}</span>`:''}
+          ${ex.weight!=='—'?`<span>🏋️ ${ex.weight}</span>`:''}
+        </div>
+        <div class="ex-tip" style="border-left-color:${hexA(c,0.5)}">💡 ${ex.tip}</div>
+      </div>`).join('');
+  } else if (selSec === 'cooldown' && hasCool) {
+    content = `<div class="simple-list">${d.cooldown.map(item=>`
+      <div class="item"><div class="dot" style="background:#818cf8"></div>${item}</div>`).join('')}</div>`;
+  }
+
+  const sectionTabs = (hasWarm || hasCool) ? `
+    <div class="section-tabs">${tabs.map(t=>`
+      <button class="sec-btn${selSec===t.id?' active':''}" onclick="selectSec('${t.id}')"
+        style="color:${selSec===t.id?c:'#475569'};${selSec===t.id?'border-bottom-color:'+c:''}">${t.label}</button>`).join('')}
+    </div>` : '';
+
+  document.getElementById('dayCard').innerHTML = `
+    <div class="day-header" style="background:${hexA(c,0.12)};border-bottom:1px solid ${hexA(c,0.2)}">
+      <div>
+        <div class="day-name">${d.day}</div>
+        <div class="day-tag" style="background:${ts.bg};border:1px solid ${ts.border};color:${ts.color}">${d.tag}</div>
+      </div>
+      <div class="dur">
+        <div class="dur-val" style="color:${c}">${d.dur}</div>
+        <div class="dur-lbl">duration</div>
+      </div>
+    </div>
+    ${sectionTabs}
+    <div class="section-content">${content}</div>`;
+}
+
+function renderTips() {
+  document.getElementById('tipsGrid').innerHTML = PLAN.tips.map(t=>`
+    <div class="tip-card">
+      <div class="tip-icon">${t.icon}</div>
+      <div class="tip-title">${t.title}</div>
+      <div class="tip-text">${t.text}</div>
+    </div>`).join('');
+}
+
+function selectWeek(i) { selWeek=i; selDay=0; selSec='exercises'; render(); }
+function selectDay(i)  { selDay=i; selSec='exercises'; render(); }
+function selectSec(s)  { selSec=s; renderDayCard(); }
+
+function render() {
+  renderWeekTabs();
+  renderThemeBanner();
+  renderDayTabs();
+  renderDayCard();
+}
+
+render();
+renderTips();
+</script>
+</body>
+</html>
